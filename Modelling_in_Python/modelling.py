@@ -1,31 +1,65 @@
+# export_csv.py
+# Creates 3 RapidMiner-style CSVs:
+#   - knn_results.csv
+#   - rf_results.csv   (column name: prepruning; uses RapidMiner default prepruning: leaf=2, split=4)
+#   - logreg_results.csv (NO C column)
+
+import os
 import argparse
-import time
 import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score
 
-# Samplers
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+
+# imblearn (SMOTE / undersampling)
 try:
     from imblearn.over_sampling import SMOTE
     from imblearn.under_sampling import RandomUnderSampler
+    from imblearn.pipeline import Pipeline
     IMBLEARN_AVAILABLE = True
 except ImportError:
     IMBLEARN_AVAILABLE = False
 
 
-# ------------------------------------------------------------
-# DATA LOADING & PREPARATION
-# ------------------------------------------------------------
-def load_and_prepare(csv_path: str, sep: str, encoding: str):
-    print("Loading data...")
-    df = pd.read_csv(csv_path, sep=sep, encoding=encoding, engine="python")
+# -------------------------
+# Helpers (RapidMiner-style)
+# -------------------------
+def pct(x: float) -> str:
+    return f"{x * 100:.2f}%"
 
+def rapidminer_metrics(y_true, y_pred):
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    return {
+        "accuracy": pct(accuracy_score(y_true, y_pred)),
+        "pred_1_1": int(tp),  # TP
+        "pred_1_0": int(fn),  # FN
+        "pred_0_1": int(fp),  # FP
+        "pred_0_0": int(tn),  # TN
+        "class_recall_1_1": pct(recall_score(y_true, y_pred, pos_label=1)),
+        "class_recall_0_0": pct(recall_score(y_true, y_pred, pos_label=0)),
+        "class_precision_1_1": pct(precision_score(y_true, y_pred, pos_label=1, zero_division=0)),
+        "class_precision_0_0": pct(precision_score(y_true, y_pred, pos_label=0, zero_division=0)),
+    }
+
+def parse_int_list(s: str):
+    return [int(x.strip()) for x in s.split(",") if x.strip()]
+
+def parse_bool_list_rm(s: str):
+    # expects e.g. "FALSE,TRUE"
+    return [x.strip().upper() == "TRUE" for x in s.split(",") if x.strip()]
+
+
+# -------------------------
+# Data loading / prep
+# -------------------------
+def load_and_prepare(csv_path: str, sep: str, encoding: str, year_now: int):
+    df = pd.read_csv(csv_path, sep=sep, encoding=encoding, engine="python")
     df.columns = df.columns.str.strip()
 
     required = ["funding_total_usd", "funding_rounds", "founded_at", "Status"]
@@ -33,11 +67,10 @@ def load_and_prepare(csv_path: str, sep: str, encoding: str):
     if missing:
         raise KeyError(f"Missing columns: {missing}")
 
-    df = df[required].copy()
-    df = df.dropna()
+    df = df[required].copy().dropna()
 
     df["founded_at"] = pd.to_datetime(df["founded_at"], errors="coerce")
-    df["company_age"] = 2025 - df["founded_at"].dt.year
+    df["company_age"] = year_now - df["founded_at"].dt.year
 
     for c in ["funding_total_usd", "funding_rounds", "Status"]:
         df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -45,83 +78,231 @@ def load_and_prepare(csv_path: str, sep: str, encoding: str):
     df["log_funding"] = np.log1p(df["funding_total_usd"])
     df = df.dropna()
 
-    df = df[df["Status"].isin([0, 1])]
+    df = df[df["Status"].isin([0, 1])].copy()
     df["Status"] = df["Status"].astype(int)
 
     X = df[["log_funding", "funding_rounds", "company_age"]]
     y = df["Status"]
-
-    print(f"Loaded {df.shape[0]} rows")
-    print("Class distribution:")
-    print(y.value_counts(normalize=True))
-    print()
-
     return X, y
 
 
-# ------------------------------------------------------------
-# SAMPLING
-# ------------------------------------------------------------
-def apply_sampler(X_train_scaled, y_train, sampler, random_state):
-    if sampler == "none":
-        return X_train_scaled, y_train
+# -------------------------
+# KNN CSV (exact column order)
+# -------------------------
+def build_knn_df(X_train, y_train, X_test, y_test, k_list, sampler, random_state):
+    rows = []
+    cols = [
+        "id","accuracy","pred_1_1","pred_1_0","pred_0_1","pred_0_0",
+        "class_recall_1_1","class_recall_0_0","class_precision_1_1","class_precision_0_0","k"
+    ]
 
-    if not IMBLEARN_AVAILABLE:
-        raise ImportError("Install imbalanced-learn to use sampling.")
+    for idx, k in enumerate(k_list, start=1):
+        if sampler != "none":
+            if not IMBLEARN_AVAILABLE:
+                raise ImportError("pip install imbalanced-learn (required for SMOTE/undersampling)")
 
-    if sampler == "smote":
-        print("Applying SMOTE...")
-        sm = SMOTE(random_state=random_state)
-        return sm.fit_resample(X_train_scaled, y_train)
+            steps = [("scaler", StandardScaler())]
+            if sampler == "smote":
+                steps.append(("sampler", SMOTE(random_state=random_state)))
+            elif sampler == "under":
+                steps.append(("sampler", RandomUnderSampler(random_state=random_state)))
 
-    if sampler == "under":
-        print("Applying undersampling...")
-        ru = RandomUnderSampler(random_state=random_state)
-        return ru.fit_resample(X_train_scaled, y_train)
+            steps.append(("model", KNeighborsClassifier(n_neighbors=k, weights="distance")))
+            model = Pipeline(steps)
+            model.fit(X_train, y_train)
+            y_pred = model.predict(X_test)
+        else:
+            scaler = StandardScaler()
+            Xtr = scaler.fit_transform(X_train)
+            Xte = scaler.transform(X_test)
+            model = KNeighborsClassifier(n_neighbors=k, weights="distance")
+            model.fit(Xtr, y_train)
+            y_pred = model.predict(Xte)
 
-    raise ValueError("Invalid sampler")
+        m = rapidminer_metrics(y_test, y_pred)
+        rows.append({
+            "id": idx,
+            "accuracy": m["accuracy"],
+            "pred_1_1": m["pred_1_1"],
+            "pred_1_0": m["pred_1_0"],
+            "pred_0_1": m["pred_0_1"],
+            "pred_0_0": m["pred_0_0"],
+            "class_recall_1_1": m["class_recall_1_1"],
+            "class_recall_0_0": m["class_recall_0_0"],
+            "class_precision_1_1": m["class_precision_1_1"],
+            "class_precision_0_0": m["class_precision_0_0"],
+            "k": int(k),
+        })
+
+    return pd.DataFrame(rows)[cols]
 
 
-# ------------------------------------------------------------
-# EVALUATION
-# ------------------------------------------------------------
-def evaluate_model(name, model, X_test, y_test, threshold):
-    y_prob = model.predict_proba(X_test)[:, 1]
-    y_pred = (y_prob >= threshold).astype(int)
+# -------------------------
+# RF CSV (exact column order) with RapidMiner-default prepruning
+# -------------------------
+def build_rf_df(
+    X_train, y_train, X_test, y_test,
+    trees_list, depth_list, prepruning_list,
+    random_state
+):
+    """
+    RapidMiner prepruning defaults (commonly used / documented):
+      - minimal leaf size = 2
+      - minimal size for split = 4
+      - minimal gain = 0.1 (NO direct 1:1 mapping to sklearn impurity decrease)
+      - number of prepruning alternatives = 3 (NO sklearn equivalent)
 
-    print(f"\n{name}")
-    print("Confusion matrix:")
-    print(confusion_matrix(y_test, y_pred))
+    Here we replicate the part that is directly comparable in sklearn:
+      - min_samples_leaf = 2
+      - min_samples_split = 4
+    """
+    RM_MIN_SAMPLES_LEAF = 2
+    RM_MIN_SAMPLES_SPLIT = 4
 
-    print("\nClassification report:")
-    print(classification_report(y_test, y_pred, digits=3))
+    rows = []
+    cols = [
+        "id","accuracy","pred_1_1","pred_1_0","pred_0_1","pred_0_0",
+        "class_recall_1_1","class_recall_0_0","class_precision_1_1","class_precision_0_0",
+        "number_of_trees","max_depth","prepruning"
+    ]
 
-    auc = roc_auc_score(y_test, y_prob)
-    print("ROC AUC:", auc)
+    idx = 1
+    for depth in depth_list:
+        for trees in trees_list:
+            for prepruning in prepruning_list:
+                if prepruning:
+                    min_leaf = RM_MIN_SAMPLES_LEAF
+                    min_split = RM_MIN_SAMPLES_SPLIT
+                else:
+                    min_leaf = 1
+                    min_split = 2
 
-    return auc
+                rf = RandomForestClassifier(
+                    n_estimators=int(trees),
+                    max_depth=int(depth),
+                    min_samples_leaf=int(min_leaf),
+                    min_samples_split=int(min_split),
+                    class_weight="balanced",
+                    random_state=random_state,
+                    n_jobs=-1
+                )
+                rf.fit(X_train, y_train)
+                y_pred = rf.predict(X_test)
+
+                m = rapidminer_metrics(y_test, y_pred)
+                rows.append({
+                    "id": idx,
+                    "accuracy": m["accuracy"],
+                    "pred_1_1": m["pred_1_1"],
+                    "pred_1_0": m["pred_1_0"],
+                    "pred_0_1": m["pred_0_1"],
+                    "pred_0_0": m["pred_0_0"],
+                    "class_recall_1_1": m["class_recall_1_1"],
+                    "class_recall_0_0": m["class_recall_0_0"],
+                    "class_precision_1_1": m["class_precision_1_1"],
+                    "class_precision_0_0": m["class_precision_0_0"],
+                    "number_of_trees": int(trees),
+                    "max_depth": int(depth),
+                    "prepruning": "TRUE" if prepruning else "FALSE",
+                })
+                idx += 1
+
+    return pd.DataFrame(rows)[cols]
 
 
-# ------------------------------------------------------------
-# MAIN
-# ------------------------------------------------------------
+# -------------------------
+# Logistic Regression CSV (NO C column; exact order requested)
+# -------------------------
+def build_logreg_df(X_train, y_train, X_test, y_test, sampler, random_state):
+    rows = []
+    cols = [
+        "id","accuracy","pred_1_1","pred_1_0","pred_0_1","pred_0_0",
+        "class_recall_1_1","class_recall_0_0","class_precision_1_1","class_precision_0_0"
+    ]
+
+    idx = 1
+
+    if sampler != "none":
+        if not IMBLEARN_AVAILABLE:
+            raise ImportError("pip install imbalanced-learn (required for SMOTE/undersampling)")
+
+        steps = [("scaler", StandardScaler())]
+        if sampler == "smote":
+            steps.append(("sampler", SMOTE(random_state=random_state)))
+        elif sampler == "under":
+            steps.append(("sampler", RandomUnderSampler(random_state=random_state)))
+
+        steps.append(("model", LogisticRegression(max_iter=2000, random_state=random_state)))
+        model = Pipeline(steps)
+
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+    else:
+        scaler = StandardScaler()
+        Xtr = scaler.fit_transform(X_train)
+        Xte = scaler.transform(X_test)
+
+        model = LogisticRegression(
+            max_iter=2000,
+            class_weight="balanced",
+            random_state=random_state
+        )
+        model.fit(Xtr, y_train)
+        y_pred = model.predict(Xte)
+
+    m = rapidminer_metrics(y_test, y_pred)
+    rows.append({
+        "id": idx,
+        "accuracy": m["accuracy"],
+        "pred_1_1": m["pred_1_1"],
+        "pred_1_0": m["pred_1_0"],
+        "pred_0_1": m["pred_0_1"],
+        "pred_0_0": m["pred_0_0"],
+        "class_recall_1_1": m["class_recall_1_1"],
+        "class_recall_0_0": m["class_recall_0_0"],
+        "class_precision_1_1": m["class_precision_1_1"],
+        "class_precision_0_0": m["class_precision_0_0"],
+    })
+
+    return pd.DataFrame(rows)[cols]
+
+
+# -------------------------
+# Main
+# -------------------------
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--csv", type=str, default="startups.csv")
+    parser = argparse.ArgumentParser(description="Export RapidMiner-style CSV results for KNN, RF, and Logistic Regression.")
+    parser.add_argument("--csv", type=str, default="../Data/startups.csv")
     parser.add_argument("--sep", type=str, default=";")
     parser.add_argument("--encoding", type=str, default="utf-8")
+    parser.add_argument("--year_now", type=int, default=2025)
+
     parser.add_argument("--test_size", type=float, default=0.3)
-    parser.add_argument("--sampler", choices=["none", "smote", "under"], default="none")
-    parser.add_argument("--threshold", type=float, default=0.5)
     parser.add_argument("--random_state", type=int, default=42)
+
+    # Sampling for KNN + Logistic
+    parser.add_argument("--sampler", choices=["none", "smote", "under"], default="smote")
+
+    # KNN params
+    parser.add_argument("--k_list", type=str, default="5,10,15,20,25")
+
+    # RF params
+    parser.add_argument("--trees_list", type=str, default="50,100,200,300,400,500")
+    parser.add_argument("--depth_list", type=str, default="10,15,20")
+    parser.add_argument("--prepruning_list", type=str, default="FALSE,TRUE")
+
+    # Output paths
+    parser.add_argument("--out_knn", type=str, default="knn_results.csv")
+    parser.add_argument("--out_rf", type=str, default="rf_results.csv")
+    parser.add_argument("--out_logreg", type=str, default="logreg_results.csv")
+
     args = parser.parse_args()
 
-    start = time.time()
+    if not os.path.exists(args.csv):
+        raise FileNotFoundError(f"CSV not found: {args.csv} (working dir: {os.getcwd()})")
 
-    # Load data
-    X, y = load_and_prepare(args.csv, args.sep, args.encoding)
+    X, y = load_and_prepare(args.csv, args.sep, args.encoding, args.year_now)
 
-    # Split
     X_train, X_test, y_train, y_test = train_test_split(
         X, y,
         test_size=args.test_size,
@@ -129,84 +310,27 @@ def main():
         random_state=args.random_state
     )
 
-    # Scale
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
+    k_list = parse_int_list(args.k_list)
+    trees_list = parse_int_list(args.trees_list)
+    depth_list = parse_int_list(args.depth_list)
+    prepruning_list = parse_bool_list_rm(args.prepruning_list)
 
-    # Sampling (only for Logistic & KNN)
-    X_train_final, y_train_final = apply_sampler(
-        X_train_scaled, y_train, args.sampler, args.random_state
+    knn_df = build_knn_df(X_train, y_train, X_test, y_test, k_list, args.sampler, args.random_state)
+    rf_df = build_rf_df(
+        X_train, y_train, X_test, y_test,
+        trees_list, depth_list, prepruning_list,
+        args.random_state
     )
+    log_df = build_logreg_df(X_train, y_train, X_test, y_test, args.sampler, args.random_state)
 
-    # --------------------------------------------------------
-    # 1) LOGISTIC REGRESSION
-    # --------------------------------------------------------
-    print("\nTraining Logistic Regression...")
-    log_model = LogisticRegression(
-        max_iter=2000,
-        class_weight="balanced" if args.sampler == "none" else None,
-        random_state=args.random_state
-    )
-    log_model.fit(X_train_final, y_train_final)
-    log_auc = evaluate_model(
-        "Logistic Regression",
-        log_model,
-        X_test_scaled,
-        y_test,
-        args.threshold
-    )
+    knn_df.to_csv(args.out_knn, index=False, sep=";")
+    rf_df.to_csv(args.out_rf, index=False, sep=";")
+    log_df.to_csv(args.out_logreg, index=False, sep=";")
 
-    # --------------------------------------------------------
-    # 2) RANDOM FOREST (NO SCALING)
-    # --------------------------------------------------------
-    print("\nTraining Random Forest...")
-    rf_model = RandomForestClassifier(
-        n_estimators=400,
-        max_depth=12,
-        min_samples_leaf=10,
-        class_weight="balanced",
-        random_state=args.random_state,
-        n_jobs=-1
-    )
-    rf_model.fit(X_train, y_train)
-    rf_auc = evaluate_model(
-        "Random Forest",
-        rf_model,
-        X_test,
-        y_test,
-        args.threshold
-    )
-
-    # --------------------------------------------------------
-    # 3) KNN
-    # --------------------------------------------------------
-    print("\nTraining KNN...")
-    knn_model = KNeighborsClassifier(
-        n_neighbors=25,
-        weights="distance"
-    )
-    knn_model.fit(X_train_final, y_train_final)
-    knn_auc = evaluate_model(
-        "KNN",
-        knn_model,
-        X_test_scaled,
-        y_test,
-        args.threshold
-    )
-
-    # --------------------------------------------------------
-    # SUMMARY
-    # --------------------------------------------------------
-    print("\n==============================")
-    print("MODEL COMPARISON (ROC AUC)")
-    print("==============================")
-    print(f"Logistic Regression: {log_auc:.3f}")
-    print(f"Random Forest:       {rf_auc:.3f}")
-    print(f"KNN:                 {knn_auc:.3f}")
-    print("==============================")
-    print(f"Sampler: {args.sampler} | Threshold: {args.threshold}")
-    print(f"Runtime: {time.time() - start:.2f} seconds")
+    print("Saved CSV files:")
+    print(" -", args.out_knn)
+    print(" -", args.out_rf)
+    print(" -", args.out_logreg)
 
 
 if __name__ == "__main__":
