@@ -65,10 +65,10 @@ def load_results(path):
 
 def rapidminer_table(row):
     # TP/FN/FP/TN mapping:
-    TP = int(row["pred_0_1"])
-    FN = int(row["pred_0_0"])
-    FP = int(row["pred_1_1"])
-    TN = int(row["pred_1_0"])
+    TP = int(row["pred_0_0"])
+    FN = int(row["pred_0_1"])
+    FP = int(row["pred_1_0"])
+    TN = int(row["pred_1_1"])
 
     total = TP + TN + FP + FN
     acc = (TP + TN) / total if total else 0.0
