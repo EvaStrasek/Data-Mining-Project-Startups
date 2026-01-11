@@ -13,7 +13,7 @@
     <parameter key="encoding" value="SYSTEM"/>
     <process expanded="true">
       <operator activated="true" class="retrieve" compatibility="12.0.001" expanded="true" height="68" name="Retrieve investments_VC (6)" width="90" x="45" y="187">
-        <parameter key="repository_entry" value="//Local Repository/processes/GROUP PROJECT/investments_VC (6)"/>
+        <parameter key="repository_entry" value="//Projektna_naloga_DataMining/investments_VC"/>
       </operator>
       <operator activated="true" class="filter_examples" compatibility="12.0.001" expanded="true" height="103" name="Filter Examples" width="90" x="179" y="187">
         <parameter key="parameter_expression" value=""/>
@@ -35,7 +35,7 @@
         <parameter key="type" value="exclude attributes"/>
         <parameter key="attribute_filter_type" value="a subset"/>
         <parameter key="select_attribute" value=""/>
-        <parameter key="select_subset" value="angel␞category_list␞convertible_note␞country_code␞debt_financing␞equity_crowdfunding␞first_funding_at␞founded_month␞grant␞last_funding_at␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞secondary_market␞seed␞undisclosed␞venture␞founded_at"/>
+        <parameter key="select_subset" value="category_list␞convertible_note␞country_code␞first_funding_at␞founded_at␞founded_month␞last_funding_at"/>
         <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
       </operator>
       <operator activated="true" class="blending:generate_columns" compatibility="12.0.001" expanded="true" height="82" name="Generate Attributes (3)" width="90" x="447" y="187">
@@ -50,7 +50,7 @@
         <parameter key="type" value="exclude attributes"/>
         <parameter key="attribute_filter_type" value="a subset"/>
         <parameter key="select_attribute" value=""/>
-        <parameter key="select_subset" value="status␞founded_year"/>
+        <parameter key="select_subset" value="angel␞city␞debt_financing␞equity_crowdfunding␞founded_quarter␞founded_year␞grant␞homepage_url␞name␞permalink␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞region␞secondary_market␞seed␞state_code␞status␞undisclosed␞venture␞round_A␞round_B␞round_C␞round_D␞round_E␞round_G␞round_F␞round_H"/>
         <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
       </operator>
       <operator activated="true" class="replace" compatibility="12.0.001" expanded="true" height="82" name="Replace" width="90" x="715" y="187">
@@ -144,16 +144,24 @@
         <parameter key="use_local_random_seed" value="false"/>
         <parameter key="local_random_seed" value="1992"/>
       </operator>
-      <operator activated="true" class="concurrency:parallel_decision_tree" compatibility="12.0.001" expanded="true" height="103" name="Decision Tree" width="90" x="1519" y="34">
+      <operator activated="true" class="concurrency:parallel_random_forest" compatibility="12.0.001" expanded="true" height="103" name="Random Forest" width="90" x="1519" y="34">
+        <parameter key="number_of_trees" value="100"/>
         <parameter key="criterion" value="gain_ratio"/>
-        <parameter key="maximal_depth" value="10"/>
-        <parameter key="apply_pruning" value="true"/>
+        <parameter key="maximal_depth" value="30"/>
+        <parameter key="apply_pruning" value="false"/>
         <parameter key="confidence" value="0.1"/>
         <parameter key="apply_prepruning" value="true"/>
         <parameter key="minimal_gain" value="0.01"/>
         <parameter key="minimal_leaf_size" value="2"/>
         <parameter key="minimal_size_for_split" value="4"/>
         <parameter key="number_of_prepruning_alternatives" value="3"/>
+        <parameter key="random_splits" value="false"/>
+        <parameter key="guess_subset_ratio" value="true"/>
+        <parameter key="subset_ratio" value="0.2"/>
+        <parameter key="voting_strategy" value="confidence vote"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+        <parameter key="enable_parallel_execution" value="true"/>
       </operator>
       <operator activated="true" class="apply_model" compatibility="12.0.001" expanded="true" height="82" name="Apply Model" width="90" x="1586" y="289">
         <list key="application_parameters"/>
@@ -197,8 +205,8 @@
       <connect from_op="Set Role" from_port="example set output" to_op="Split Data" to_port="example set"/>
       <connect from_op="Split Data" from_port="partition 1" to_op="SMOTE Upsampling" to_port="exa"/>
       <connect from_op="Split Data" from_port="partition 2" to_op="Apply Model" to_port="unlabelled data"/>
-      <connect from_op="SMOTE Upsampling" from_port="ups" to_op="Decision Tree" to_port="training set"/>
-      <connect from_op="Decision Tree" from_port="model" to_op="Apply Model" to_port="model"/>
+      <connect from_op="SMOTE Upsampling" from_port="ups" to_op="Random Forest" to_port="training set"/>
+      <connect from_op="Random Forest" from_port="model" to_op="Apply Model" to_port="model"/>
       <connect from_op="Apply Model" from_port="labelled data" to_op="Performance" to_port="labelled data"/>
       <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
       <connect from_op="Performance" from_port="performance" to_port="result 1"/>
