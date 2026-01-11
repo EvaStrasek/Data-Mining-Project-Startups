@@ -154,7 +154,7 @@ st.sidebar.header("Navigation")
 
 view = st.sidebar.radio(
     "Choose view",
-    ["Sample data","KNN", "Random Forest"],
+    ["Sample data","kNN", "Random Forest"],
     key="view_choice",
 )
 
@@ -177,7 +177,7 @@ if st.sidebar.button("Reset to best accuracy"):
 
 # ------------------------ KNN view ------------------------
 if view == "KNN":
-    st.header("KNN")
+    st.header("kNN")
 
     if knn_df is None:
         st.error("Could not find results_knn.csv")
@@ -210,7 +210,7 @@ if view == "KNN":
 
 # ------------------------ RF view ------------------------
 elif view == "Random Forest":
-    st.header("Random Forest / Random Tree")
+    st.header("Random Forest")
 
     if rf_df is None:
         st.error("Could not find results_random_forest.csv")
