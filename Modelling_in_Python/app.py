@@ -176,7 +176,7 @@ if st.sidebar.button("Reset to best accuracy"):
 
 
 # ------------------------ KNN view ------------------------
-if view == "KNN":
+if view == "kNN":
     st.header("kNN")
 
     if knn_df is None:
