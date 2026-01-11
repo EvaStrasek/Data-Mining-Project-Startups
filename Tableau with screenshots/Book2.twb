@@ -1,0 +1,1461 @@
+<?xml version='1.0' encoding='utf-8' ?>
+
+<!-- build 20253.25.1210.1815                               -->
+<workbook original-version='18.1' source-build='2025.3.1 (20253.25.1210.1815)' source-platform='win' version='18.1' xmlns:user='http://www.tableausoftware.com/xml/user'>
+  <document-format-change-manifest>
+    <AnimationOnByDefault />
+    <MarkAnimation />
+    <ObjectModelEncapsulateLegacy />
+    <ObjectModelExtractV2 />
+    <ObjectModelTableType />
+    <SchemaViewerObjectModel />
+    <SheetIdentifierTracking />
+    <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
+    <WindowsPersistSimpleIdentifiers />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name='ui.encoding.shelf.height' value='24' />
+    <preference name='ui.shelf.height' value='26' />
+  </preferences>
+  <datasources>
+    <datasource caption='investments_VC' inline='true' name='federated.0z34aim0k6nfve107yn800btt9ny' version='18.1'>
+      <connection class='federated'>
+        <named-connections>
+          <named-connection caption='investments_VC' name='textscan.10oozf91mdqmnw11qp50i1or4xd4'>
+            <connection class='textscan' directory='C:/Users/USER/Documents' filename='investments_VC.csv' password='' server='' />
+          </named-connection>
+        </named-connections>
+        <relation connection='textscan.10oozf91mdqmnw11qp50i1or4xd4' name='investments_VC.csv' table='[investments_VC#csv]' type='table'>
+          <columns character-set='windows-1252' header='yes' locale='ru_RU' separator=';'>
+            <column datatype='string' name='permalink' ordinal='0' />
+            <column datatype='string' name='name' ordinal='1' />
+            <column datatype='string' name='homepage_url' ordinal='2' />
+            <column datatype='string' name='category_list' ordinal='3' />
+            <column datatype='string' name='market ' ordinal='4' />
+            <column datatype='string' name='funding_total_usd ' ordinal='5' />
+            <column datatype='string' name='status' ordinal='6' />
+            <column datatype='string' name='country_code' ordinal='7' />
+            <column datatype='string' name='state_code' ordinal='8' />
+            <column datatype='string' name='region' ordinal='9' />
+            <column datatype='string' name='city' ordinal='10' />
+            <column datatype='integer' name='funding_rounds' ordinal='11' />
+            <column datatype='date' name='founded_at' ordinal='12' />
+            <column datatype='date' name='founded_month' ordinal='13' />
+            <column datatype='string' name='founded_quarter' ordinal='14' />
+            <column datatype='integer' name='founded_year' ordinal='15' />
+            <column datatype='date' name='first_funding_at' ordinal='16' />
+            <column datatype='date' name='last_funding_at' ordinal='17' />
+            <column datatype='integer' name='seed' ordinal='18' />
+            <column datatype='integer' name='venture' ordinal='19' />
+            <column datatype='integer' name='equity_crowdfunding' ordinal='20' />
+            <column datatype='integer' name='undisclosed' ordinal='21' />
+            <column datatype='integer' name='convertible_note' ordinal='22' />
+            <column datatype='integer' name='debt_financing' ordinal='23' />
+            <column datatype='integer' name='angel' ordinal='24' />
+            <column datatype='integer' name='grant' ordinal='25' />
+            <column datatype='integer' name='private_equity' ordinal='26' />
+            <column datatype='integer' name='post_ipo_equity' ordinal='27' />
+            <column datatype='integer' name='post_ipo_debt' ordinal='28' />
+            <column datatype='integer' name='secondary_market' ordinal='29' />
+            <column datatype='integer' name='product_crowdfunding' ordinal='30' />
+            <column datatype='integer' name='round_A' ordinal='31' />
+            <column datatype='integer' name='round_B' ordinal='32' />
+            <column datatype='integer' name='round_C' ordinal='33' />
+            <column datatype='integer' name='round_D' ordinal='34' />
+            <column datatype='integer' name='round_E' ordinal='35' />
+            <column datatype='integer' name='round_F' ordinal='36' />
+            <column datatype='integer' name='round_G' ordinal='37' />
+            <column datatype='integer' name='round_H' ordinal='38' />
+          </columns>
+        </relation>
+        <metadata-records>
+          <metadata-record class='capability'>
+            <remote-name />
+            <remote-type>0</remote-type>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias />
+            <aggregation>Count</aggregation>
+            <contains-null>true</contains-null>
+            <attributes>
+              <attribute datatype='string' name='character-set'>&quot;ibm-5348_P100-1997&quot;</attribute>
+              <attribute datatype='string' name='collation'>&quot;ru&quot;</attribute>
+              <attribute datatype='string' name='currency'>&quot;₽&quot;</attribute>
+              <attribute datatype='string' name='decimal-char'>&quot;,&quot;</attribute>
+              <attribute datatype='string' name='field-delimiter'>&quot;;&quot;</attribute>
+              <attribute datatype='string' name='header-row'>&quot;true&quot;</attribute>
+              <attribute datatype='string' name='locale'>&quot;ru_RU&quot;</attribute>
+              <attribute datatype='string' name='single-char'>&quot;&quot;</attribute>
+              <attribute datatype='string' name='thousands-char'>&quot; &quot;</attribute>
+            </attributes>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>permalink</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[permalink]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>permalink</remote-alias>
+            <ordinal>0</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>name</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[name]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>name</remote-alias>
+            <ordinal>1</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>homepage_url</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[homepage_url]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>homepage_url</remote-alias>
+            <ordinal>2</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>category_list</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[category_list]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>category_list</remote-alias>
+            <ordinal>3</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>market </remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[market ]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>market </remote-alias>
+            <ordinal>4</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>funding_total_usd </remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[funding_total_usd ]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>funding_total_usd </remote-alias>
+            <ordinal>5</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>status</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[status]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>status</remote-alias>
+            <ordinal>6</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>country_code</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[country_code]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>country_code</remote-alias>
+            <ordinal>7</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>state_code</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[state_code]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>state_code</remote-alias>
+            <ordinal>8</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>region</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[region]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>region</remote-alias>
+            <ordinal>9</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>city</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[city]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>city</remote-alias>
+            <ordinal>10</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>funding_rounds</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[funding_rounds]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>funding_rounds</remote-alias>
+            <ordinal>11</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>founded_at</remote-name>
+            <remote-type>133</remote-type>
+            <local-name>[founded_at]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>founded_at</remote-alias>
+            <ordinal>12</ordinal>
+            <local-type>date</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>founded_month</remote-name>
+            <remote-type>133</remote-type>
+            <local-name>[founded_month]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>founded_month</remote-alias>
+            <ordinal>13</ordinal>
+            <local-type>date</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>founded_quarter</remote-name>
+            <remote-type>129</remote-type>
+            <local-name>[founded_quarter]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>founded_quarter</remote-alias>
+            <ordinal>14</ordinal>
+            <local-type>string</local-type>
+            <aggregation>Count</aggregation>
+            <scale>1</scale>
+            <width>1073741823</width>
+            <contains-null>true</contains-null>
+            <collation flag='0' name='LRU_RRU' />
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>founded_year</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[founded_year]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>founded_year</remote-alias>
+            <ordinal>15</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>first_funding_at</remote-name>
+            <remote-type>133</remote-type>
+            <local-name>[first_funding_at]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>first_funding_at</remote-alias>
+            <ordinal>16</ordinal>
+            <local-type>date</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>last_funding_at</remote-name>
+            <remote-type>133</remote-type>
+            <local-name>[last_funding_at]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>last_funding_at</remote-alias>
+            <ordinal>17</ordinal>
+            <local-type>date</local-type>
+            <aggregation>Year</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>seed</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[seed]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>seed</remote-alias>
+            <ordinal>18</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>venture</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[venture]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>venture</remote-alias>
+            <ordinal>19</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>equity_crowdfunding</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[equity_crowdfunding]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>equity_crowdfunding</remote-alias>
+            <ordinal>20</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>undisclosed</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[undisclosed]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>undisclosed</remote-alias>
+            <ordinal>21</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>convertible_note</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[convertible_note]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>convertible_note</remote-alias>
+            <ordinal>22</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>debt_financing</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[debt_financing]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>debt_financing</remote-alias>
+            <ordinal>23</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>angel</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[angel]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>angel</remote-alias>
+            <ordinal>24</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>grant</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[grant]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>grant</remote-alias>
+            <ordinal>25</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>private_equity</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[private_equity]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>private_equity</remote-alias>
+            <ordinal>26</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>post_ipo_equity</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[post_ipo_equity]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>post_ipo_equity</remote-alias>
+            <ordinal>27</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>post_ipo_debt</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[post_ipo_debt]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>post_ipo_debt</remote-alias>
+            <ordinal>28</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>secondary_market</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[secondary_market]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>secondary_market</remote-alias>
+            <ordinal>29</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>product_crowdfunding</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[product_crowdfunding]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>product_crowdfunding</remote-alias>
+            <ordinal>30</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_A</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_A]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_A</remote-alias>
+            <ordinal>31</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_B</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_B]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_B</remote-alias>
+            <ordinal>32</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_C</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_C]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_C</remote-alias>
+            <ordinal>33</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_D</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_D]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_D</remote-alias>
+            <ordinal>34</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_E</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_E]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_E</remote-alias>
+            <ordinal>35</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_F</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_F]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_F</remote-alias>
+            <ordinal>36</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_G</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_G]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_G</remote-alias>
+            <ordinal>37</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+          <metadata-record class='column'>
+            <remote-name>round_H</remote-name>
+            <remote-type>20</remote-type>
+            <local-name>[round_H]</local-name>
+            <parent-name>[investments_VC.csv]</parent-name>
+            <remote-alias>round_H</remote-alias>
+            <ordinal>38</ordinal>
+            <local-type>integer</local-type>
+            <aggregation>Sum</aggregation>
+            <contains-null>true</contains-null>
+            <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+          </metadata-record>
+        </metadata-records>
+      </connection>
+      <aliases enabled='yes' />
+      <column caption='investments_VC.csv' datatype='table' name='[__tableau_internal_object_id__].[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]' role='measure' type='quantitative' />
+      <column datatype='string' name='[city]' role='dimension' semantic-role='[City].[Name]' type='nominal' />
+      <column datatype='string' name='[country_code]' role='dimension' semantic-role='[Country].[ISO3166_2]' type='nominal' />
+      <column datatype='integer' name='[founded_year]' role='dimension' type='quantitative' />
+      <column datatype='string' name='[state_code]' role='dimension' semantic-role='[State].[Name]' type='nominal' />
+      <drill-paths>
+        <drill-path name='country_code, state_code, city'>
+          <field>[country_code]</field>
+          <field>[state_code]</field>
+          <field>[city]</field>
+        </drill-path>
+      </drill-paths>
+      <extract _.fcp.VConnDownstreamExtractsWithWarnings.true...user-specific='false' count='-1' enabled='true' object-id='' units='records'>
+        <connection access_mode='readonly' author-locale='en_US' class='hyper' dbname='C:/Users/USER/AppData/Local/Temp/TableauTemp/#TableauTemp_13t10s20o86vam14w6fx61ic3bkq.hyper' default-settings='hyper' schema='Extract' sslmode='' tablename='Extract' update-time='12/28/2025 02:03:01 PM' username='tableau_internal_user'>
+          <relation name='Extract' table='[Extract].[Extract]' type='table' />
+          <metadata-records>
+            <metadata-record class='column'>
+              <remote-name>permalink</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[permalink]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>permalink</remote-alias>
+              <ordinal>0</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>49128</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>name</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[name]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>name</remote-alias>
+              <ordinal>1</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>49128</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>homepage_url</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[homepage_url]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>homepage_url</remote-alias>
+              <ordinal>2</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>47160</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>category_list</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[category_list]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>category_list</remote-alias>
+              <ordinal>3</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>5415</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>market </remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[market ]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>market </remote-alias>
+              <ordinal>4</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1025</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>funding_total_usd </remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[funding_total_usd ]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>funding_total_usd </remote-alias>
+              <ordinal>5</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>4641</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>status</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[status]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>status</remote-alias>
+              <ordinal>6</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>4</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>country_code</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[country_code]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>country_code</remote-alias>
+              <ordinal>7</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>136</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>state_code</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[state_code]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>state_code</remote-alias>
+              <ordinal>8</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>109</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>region</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[region]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>region</remote-alias>
+              <ordinal>9</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>1015</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>city</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[city]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>city</remote-alias>
+              <ordinal>10</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>2340</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>funding_rounds</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[funding_rounds]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>funding_rounds</remote-alias>
+              <ordinal>11</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>20</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>founded_at</remote-name>
+              <remote-type>133</remote-type>
+              <local-name>[founded_at]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>founded_at</remote-alias>
+              <ordinal>12</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>date</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>1496</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>founded_month</remote-name>
+              <remote-type>133</remote-type>
+              <local-name>[founded_month]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>founded_month</remote-alias>
+              <ordinal>13</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>date</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>367</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>founded_quarter</remote-name>
+              <remote-type>129</remote-type>
+              <local-name>[founded_quarter]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>founded_quarter</remote-alias>
+              <ordinal>14</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>string</local-type>
+              <aggregation>Count</aggregation>
+              <approx-count>171</approx-count>
+              <contains-null>true</contains-null>
+              <collation flag='0' name='LRU_RRU' />
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>founded_year</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[founded_year]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>founded_year</remote-alias>
+              <ordinal>15</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>82</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>first_funding_at</remote-name>
+              <remote-type>133</remote-type>
+              <local-name>[first_funding_at]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>first_funding_at</remote-alias>
+              <ordinal>16</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>date</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>5042</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>last_funding_at</remote-name>
+              <remote-type>133</remote-type>
+              <local-name>[last_funding_at]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>last_funding_at</remote-alias>
+              <ordinal>17</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>date</local-type>
+              <aggregation>Year</aggregation>
+              <approx-count>4143</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>seed</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[seed]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>seed</remote-alias>
+              <ordinal>18</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1074</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>venture</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[venture]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>venture</remote-alias>
+              <ordinal>19</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>3345</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>equity_crowdfunding</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[equity_crowdfunding]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>equity_crowdfunding</remote-alias>
+              <ordinal>20</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>195</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>undisclosed</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[undisclosed]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>undisclosed</remote-alias>
+              <ordinal>21</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>730</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>convertible_note</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[convertible_note]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>convertible_note</remote-alias>
+              <ordinal>22</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>167</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>debt_financing</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[debt_financing]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>debt_financing</remote-alias>
+              <ordinal>23</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>1317</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>angel</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[angel]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>angel</remote-alias>
+              <ordinal>24</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>305</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>grant</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[grant]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>grant</remote-alias>
+              <ordinal>25</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>587</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>private_equity</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[private_equity]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>private_equity</remote-alias>
+              <ordinal>26</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>726</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>post_ipo_equity</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[post_ipo_equity]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>post_ipo_equity</remote-alias>
+              <ordinal>27</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>159</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>post_ipo_debt</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[post_ipo_debt]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>post_ipo_debt</remote-alias>
+              <ordinal>28</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>6</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>secondary_market</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[secondary_market]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>secondary_market</remote-alias>
+              <ordinal>29</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>product_crowdfunding</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[product_crowdfunding]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>product_crowdfunding</remote-alias>
+              <ordinal>30</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>49</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_A</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_A]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_A</remote-alias>
+              <ordinal>31</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>952</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_B</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_B]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_B</remote-alias>
+              <ordinal>32</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>606</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_C</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_C]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_C</remote-alias>
+              <ordinal>33</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>324</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_D</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_D]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_D</remote-alias>
+              <ordinal>34</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>681</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_E</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_E]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_E</remote-alias>
+              <ordinal>35</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>251</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_F</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_F]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_F</remote-alias>
+              <ordinal>36</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>49</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_G</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_G]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_G</remote-alias>
+              <ordinal>37</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>6</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+            <metadata-record class='column'>
+              <remote-name>round_H</remote-name>
+              <remote-type>20</remote-type>
+              <local-name>[round_H]</local-name>
+              <parent-name>[Extract]</parent-name>
+              <remote-alias>round_H</remote-alias>
+              <ordinal>38</ordinal>
+              <family>investments_VC.csv</family>
+              <local-type>integer</local-type>
+              <aggregation>Sum</aggregation>
+              <approx-count>2</approx-count>
+              <contains-null>true</contains-null>
+              <object-id>[investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062]</object-id>
+            </metadata-record>
+          </metadata-records>
+        </connection>
+      </extract>
+      <layout dim-ordering='alphabetic' measure-ordering='alphabetic' show-structure='true' />
+      <semantic-values>
+        <semantic-value key='[Country].[Name]' value='&quot;Russia&quot;' />
+      </semantic-values>
+      <date-options start-of-week='monday' />
+      <object-graph>
+        <objects>
+          <object caption='investments_VC.csv' id='investments_VC.csv_BCE7B14334074D758B9BE5B3727A5062'>
+            <properties context=''>
+              <relation connection='textscan.10oozf91mdqmnw11qp50i1or4xd4' name='investments_VC.csv' table='[investments_VC#csv]' type='table'>
+                <columns character-set='windows-1252' header='yes' locale='ru_RU' separator=';'>
+                  <column datatype='string' name='permalink' ordinal='0' />
+                  <column datatype='string' name='name' ordinal='1' />
+                  <column datatype='string' name='homepage_url' ordinal='2' />
+                  <column datatype='string' name='category_list' ordinal='3' />
+                  <column datatype='string' name='market ' ordinal='4' />
+                  <column datatype='string' name='funding_total_usd ' ordinal='5' />
+                  <column datatype='string' name='status' ordinal='6' />
+                  <column datatype='string' name='country_code' ordinal='7' />
+                  <column datatype='string' name='state_code' ordinal='8' />
+                  <column datatype='string' name='region' ordinal='9' />
+                  <column datatype='string' name='city' ordinal='10' />
+                  <column datatype='integer' name='funding_rounds' ordinal='11' />
+                  <column datatype='date' name='founded_at' ordinal='12' />
+                  <column datatype='date' name='founded_month' ordinal='13' />
+                  <column datatype='string' name='founded_quarter' ordinal='14' />
+                  <column datatype='integer' name='founded_year' ordinal='15' />
+                  <column datatype='date' name='first_funding_at' ordinal='16' />
+                  <column datatype='date' name='last_funding_at' ordinal='17' />
+                  <column datatype='integer' name='seed' ordinal='18' />
+                  <column datatype='integer' name='venture' ordinal='19' />
+                  <column datatype='integer' name='equity_crowdfunding' ordinal='20' />
+                  <column datatype='integer' name='undisclosed' ordinal='21' />
+                  <column datatype='integer' name='convertible_note' ordinal='22' />
+                  <column datatype='integer' name='debt_financing' ordinal='23' />
+                  <column datatype='integer' name='angel' ordinal='24' />
+                  <column datatype='integer' name='grant' ordinal='25' />
+                  <column datatype='integer' name='private_equity' ordinal='26' />
+                  <column datatype='integer' name='post_ipo_equity' ordinal='27' />
+                  <column datatype='integer' name='post_ipo_debt' ordinal='28' />
+                  <column datatype='integer' name='secondary_market' ordinal='29' />
+                  <column datatype='integer' name='product_crowdfunding' ordinal='30' />
+                  <column datatype='integer' name='round_A' ordinal='31' />
+                  <column datatype='integer' name='round_B' ordinal='32' />
+                  <column datatype='integer' name='round_C' ordinal='33' />
+                  <column datatype='integer' name='round_D' ordinal='34' />
+                  <column datatype='integer' name='round_E' ordinal='35' />
+                  <column datatype='integer' name='round_F' ordinal='36' />
+                  <column datatype='integer' name='round_G' ordinal='37' />
+                  <column datatype='integer' name='round_H' ordinal='38' />
+                </columns>
+              </relation>
+            </properties>
+            <properties context='extract'>
+              <relation name='Extract' table='[Extract].[Extract]' type='table' />
+            </properties>
+          </object>
+        </objects>
+      </object-graph>
+    </datasource>
+  </datasources>
+  <worksheets>
+    <worksheet name='Sheet 1'>
+      <table>
+        <view>
+          <datasources>
+            <datasource caption='investments_VC' name='federated.0z34aim0k6nfve107yn800btt9ny' />
+          </datasources>
+          <datasource-dependencies datasource='federated.0z34aim0k6nfve107yn800btt9ny'>
+            <column datatype='string' name='[funding_total_usd ]' role='dimension' type='nominal' />
+            <column datatype='string' name='[market ]' role='dimension' type='nominal' />
+            <column-instance column='[funding_total_usd ]' derivation='None' name='[none:funding_total_usd :nk]' pivot='key' type='nominal' />
+            <column-instance column='[market ]' derivation='None' name='[none:market :nk]' pivot='key' type='nominal' />
+            <column datatype='integer' name='[post_ipo_equity]' role='measure' type='quantitative' />
+            <column-instance column='[post_ipo_equity]' derivation='Sum' name='[sum:post_ipo_equity:qk]' pivot='key' type='quantitative' />
+          </datasource-dependencies>
+          <aggregation value='true' />
+        </view>
+        <style />
+        <panes>
+          <pane selection-relaxation-option='selection-relaxation-allow'>
+            <view>
+              <breakdown value='auto' />
+            </view>
+            <mark class='Automatic' />
+            <encodings>
+              <lod column='[federated.0z34aim0k6nfve107yn800btt9ny].[none:market :nk]' />
+            </encodings>
+          </pane>
+        </panes>
+        <rows>[federated.0z34aim0k6nfve107yn800btt9ny].[sum:post_ipo_equity:qk]</rows>
+        <cols>[federated.0z34aim0k6nfve107yn800btt9ny].[none:funding_total_usd :nk]</cols>
+      </table>
+      <simple-id uuid='{3A359453-0E85-4DBD-B200-877FA6D1467F}' />
+    </worksheet>
+  </worksheets>
+  <windows saved-dpi-scale-factor='1.25' source-height='37'>
+    <window class='worksheet' maximized='true' name='Sheet 1'>
+      <cards>
+        <edge name='left'>
+          <strip size='160'>
+            <card type='pages' />
+            <card type='filters' />
+            <card type='marks' />
+          </strip>
+        </edge>
+        <edge name='top'>
+          <strip size='2147483647'>
+            <card type='columns' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='rows' />
+          </strip>
+          <strip size='2147483647'>
+            <card type='title' />
+          </strip>
+        </edge>
+      </cards>
+      <viewpoint>
+        <highlight>
+          <color-one-way>
+            <field>[federated.0z34aim0k6nfve107yn800btt9ny].[none:funding_total_usd :nk]</field>
+            <field>[federated.0z34aim0k6nfve107yn800btt9ny].[none:market :nk]</field>
+            <field>[federated.0z34aim0k6nfve107yn800btt9ny].[none:region:nk]</field>
+          </color-one-way>
+        </highlight>
+      </viewpoint>
+      <simple-id uuid='{518AC3F3-C8D9-49A0-9498-166653EEE4B6}' />
+    </window>
+  </windows>
+  <thumbnails>
+    <thumbnail height='192' name='Sheet 1' width='192'>
+      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
+    </thumbnail>
+  </thumbnails>
+</workbook>
