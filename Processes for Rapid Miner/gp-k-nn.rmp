@@ -102,7 +102,7 @@
             <parameter key="type" value="exclude attributes"/>
             <parameter key="attribute_filter_type" value="a subset"/>
             <parameter key="select_attribute" value=""/>
-            <parameter key="select_subset" value="angel␞city␞debt_financing␞equity_crowdfunding␞founded_quarter␞founded_year␞grant␞homepage_url␞market ␞name␞permalink␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞region␞round_E␞round_F␞round_G␞round_H␞secondary_market␞seed␞state_code␞status␞undisclosed"/>
+            <parameter key="select_subset" value="city␞debt_financing␞equity_crowdfunding␞founded_quarter␞founded_year␞grant␞homepage_url␞market ␞name␞permalink␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞region␞round_E␞round_F␞round_G␞round_H␞secondary_market␞state_code␞status␞undisclosed"/>
             <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
           </operator>
           <operator activated="true" class="numerical_to_binominal" compatibility="12.0.001" expanded="true" height="82" name="Numerical to Binominal" width="90" x="1184" y="34">

@@ -97,7 +97,7 @@
         <parameter key="type" value="exclude attributes"/>
         <parameter key="attribute_filter_type" value="a subset"/>
         <parameter key="select_attribute" value=""/>
-        <parameter key="select_subset" value="angel␞city␞debt_financing␞equity_crowdfunding␞founded_quarter␞founded_year␞grant␞homepage_url␞market ␞name␞permalink␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞region␞round_E␞round_F␞round_G␞round_H␞secondary_market␞seed␞state_code␞status␞undisclosed"/>
+        <parameter key="select_subset" value="city␞debt_financing␞equity_crowdfunding␞founded_quarter␞founded_year␞grant␞homepage_url␞market ␞name␞permalink␞post_ipo_debt␞post_ipo_equity␞private_equity␞product_crowdfunding␞region␞round_E␞round_F␞round_G␞round_H␞secondary_market␞state_code␞status␞undisclosed"/>
         <parameter key="also_apply_to_special_attributes_(id,_label..)" value="false"/>
       </operator>
       <operator activated="true" class="numerical_to_binominal" compatibility="12.0.001" expanded="true" height="82" name="Numerical to Binominal" width="90" x="1318" y="136">
@@ -130,7 +130,19 @@
         <parameter key="use_local_random_seed" value="false"/>
         <parameter key="local_random_seed" value="1992"/>
       </operator>
-      <operator activated="true" class="concurrency:parallel_random_forest" compatibility="12.0.001" expanded="true" height="103" name="Random Forest" width="90" x="1787" y="34">
+      <operator activated="true" class="operator_toolbox:smote" compatibility="3.0.000" expanded="true" height="82" name="SMOTE Upsampling" width="90" x="1720" y="34">
+        <parameter key="number_of_neighbours" value="5"/>
+        <parameter key="normalize" value="true"/>
+        <parameter key="equalize_classes" value="true"/>
+        <parameter key="upsampling_size" value="1000"/>
+        <parameter key="auto_detect_minority_class" value="true"/>
+        <parameter key="round_integers" value="true"/>
+        <parameter key="nominal_change_rate" value="0.5"/>
+        <parameter key="append_to_original" value="true"/>
+        <parameter key="use_local_random_seed" value="false"/>
+        <parameter key="local_random_seed" value="1992"/>
+      </operator>
+      <operator activated="true" class="concurrency:parallel_random_forest" compatibility="12.0.001" expanded="true" height="103" name="Random Forest" width="90" x="1854" y="34">
         <parameter key="number_of_trees" value="100"/>
         <parameter key="criterion" value="gain_ratio"/>
         <parameter key="maximal_depth" value="10"/>
@@ -188,8 +200,9 @@
       <connect from_op="Select Attributes (2)" from_port="example set output" to_op="Numerical to Binominal" to_port="example set input"/>
       <connect from_op="Numerical to Binominal" from_port="example set output" to_op="Set Role" to_port="example set input"/>
       <connect from_op="Set Role" from_port="example set output" to_op="Split Data" to_port="example set"/>
-      <connect from_op="Split Data" from_port="partition 1" to_op="Random Forest" to_port="training set"/>
+      <connect from_op="Split Data" from_port="partition 1" to_op="SMOTE Upsampling" to_port="exa"/>
       <connect from_op="Split Data" from_port="partition 2" to_op="Apply Model" to_port="unlabelled data"/>
+      <connect from_op="SMOTE Upsampling" from_port="ups" to_op="Random Forest" to_port="training set"/>
       <connect from_op="Random Forest" from_port="model" to_op="Apply Model" to_port="model"/>
       <connect from_op="Apply Model" from_port="labelled data" to_op="Performance" to_port="labelled data"/>
       <connect from_op="Apply Model" from_port="model" to_port="result 2"/>
