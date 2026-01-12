@@ -64,6 +64,8 @@ features = [
     "funding_total_usd",
     "venture",
     "funding_rounds",
+    "angels",
+    "seed"
     "round_A", "round_B", "round_C", "round_D",
     "founded_year"
 ]

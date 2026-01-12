@@ -77,6 +77,8 @@ def load_and_prepare(csv_path: str, sep: str, encoding: str, year_now: int):
         "funding_total_usd",
         "venture",
         "funding_rounds",
+        "angels",
+        "seed"
         "round_A", "round_B", "round_C", "round_D",
         "founded_year",
     ]
