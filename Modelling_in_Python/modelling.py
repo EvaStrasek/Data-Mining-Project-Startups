@@ -1,9 +1,3 @@
-# export_csv.py
-# Creates 3 RapidMiner-style CSVs:
-#   - knn_results.csv
-#   - rf_results.csv   (column name: prepruning; uses RapidMiner default prepruning: leaf=2, split=4)
-#   - logreg_results.csv (NO C column)
-
 import os
 import argparse
 import numpy as np
@@ -59,30 +53,59 @@ def parse_bool_list_rm(s: str):
 # Data loading / prep
 # -------------------------
 def load_and_prepare(csv_path: str, sep: str, encoding: str, year_now: int):
+    """
+    Crunchbase-style input (semicolon separated usually):
+      - 'status' column contains: acquired / closed / operating (we keep only acquired+closed)
+      - numeric features include: funding_total_usd, venture, funding_rounds, round_A..round_D, founded_year
+    Output:
+      X: dataframe with selected features
+      y: target (1=acquired, 0=closed)
+    """
     df = pd.read_csv(csv_path, sep=sep, encoding=encoding, engine="python")
     df.columns = df.columns.str.strip()
 
-    required = ["funding_total_usd", "funding_rounds", "founded_at", "Status"]
-    missing = [c for c in required if c not in df.columns]
-    if missing:
-        raise KeyError(f"Missing columns: {missing}")
+    # Target mapping
+    if "status" not in df.columns:
+        raise KeyError("Missing column: status")
 
-    df = df[required].copy().dropna()
+    df["target"] = df["status"].map({"acquired": 1, "closed": 0})
+    df = df.dropna(subset=["target"]).copy()
+    df["target"] = df["target"].astype(int)
 
-    df["founded_at"] = pd.to_datetime(df["founded_at"], errors="coerce")
-    df["company_age"] = year_now - df["founded_at"].dt.year
+    # Candidate features (based on your correlation results)
+    candidate = [
+        "funding_total_usd",
+        "venture",
+        "funding_rounds",
+        "round_A", "round_B", "round_C", "round_D",
+        "founded_year",
+    ]
 
-    for c in ["funding_total_usd", "funding_rounds", "Status"]:
+    must_have = ["funding_total_usd", "venture", "funding_rounds", "founded_year"]
+    missing_must = [c for c in must_have if c not in df.columns]
+    if missing_must:
+        raise KeyError(f"Missing required columns for modelling: {missing_must}")
+
+    use_cols = [c for c in candidate if c in df.columns]
+
+    # Convert to numeric
+    for c in use_cols:
         df[c] = pd.to_numeric(df[c], errors="coerce")
 
+    # Drop missing rows
+    df = df.dropna(subset=use_cols + ["target"]).copy()
+
+    # log transform for funding
     df["log_funding"] = np.log1p(df["funding_total_usd"])
-    df = df.dropna()
 
-    df = df[df["Status"].isin([0, 1])].copy()
-    df["Status"] = df["Status"].astype(int)
+    feature_cols = ["log_funding"] + [c for c in use_cols if c != "funding_total_usd"]
 
-    X = df[["log_funding", "funding_rounds", "company_age"]]
-    y = df["Status"]
+    X = df[feature_cols]
+    y = df["target"]
+
+    print("Rows used for modelling:", len(df))
+    print("Target distribution:\n", y.value_counts())
+
     return X, y
 
 
@@ -149,8 +172,6 @@ def build_rf_df(
     RapidMiner prepruning defaults (commonly used / documented):
       - minimal leaf size = 2
       - minimal size for split = 4
-      - minimal gain = 0.1 (NO direct 1:1 mapping to sklearn impurity decrease)
-      - number of prepruning alternatives = 3 (NO sklearn equivalent)
 
     Here we replicate the part that is directly comparable in sklearn:
       - min_samples_leaf = 2
@@ -232,7 +253,12 @@ def build_logreg_df(X_train, y_train, X_test, y_test, sampler, random_state):
         elif sampler == "under":
             steps.append(("sampler", RandomUnderSampler(random_state=random_state)))
 
-        steps.append(("model", LogisticRegression(max_iter=2000, random_state=random_state)))
+        # keep balanced weighting even when using sampler (consistency)
+        steps.append(("model", LogisticRegression(
+            max_iter=2000,
+            class_weight="balanced",
+            random_state=random_state
+        )))
         model = Pipeline(steps)
 
         model.fit(X_train, y_train)
@@ -272,16 +298,18 @@ def build_logreg_df(X_train, y_train, X_test, y_test, sampler, random_state):
 # -------------------------
 def main():
     parser = argparse.ArgumentParser(description="Export RapidMiner-style CSV results for KNN, RF, and Logistic Regression.")
-    parser.add_argument("--csv", type=str, default="../Data/startups.csv")
+
+    # Defaults adjusted for your Crunchbase CSVs
+    parser.add_argument("--csv", type=str, default="../Data/startups_new.csv")
     parser.add_argument("--sep", type=str, default=";")
-    parser.add_argument("--encoding", type=str, default="utf-8")
-    parser.add_argument("--year_now", type=int, default=2025)
+    parser.add_argument("--encoding", type=str, default="latin1")
+    parser.add_argument("--year_now", type=int, default=2025)  # not used anymore, kept for compatibility
 
     parser.add_argument("--test_size", type=float, default=0.3)
     parser.add_argument("--random_state", type=int, default=42)
 
     # Sampling for KNN + Logistic
-    parser.add_argument("--sampler", choices=["none", "smote", "under"], default="smote")
+    parser.add_argument("--sampler", choices=["none", "smote", "under"], default="none")
 
     # KNN params
     parser.add_argument("--k_list", type=str, default="5,10,15,20,25")

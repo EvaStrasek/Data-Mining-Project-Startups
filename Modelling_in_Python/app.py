@@ -50,6 +50,13 @@ CANDIDATE_LR_PY = [
     os.path.join(BASE_DIR, "..", "Data", "results_logreg_python.csv"),
 ]
 
+# NEW: XGBoost results candidates
+CANDIDATE_XGB = [
+    os.path.join(BASE_DIR, "Data", "xgb_results.csv"),
+    os.path.join(BASE_DIR, "..", "Data", "xgb_results.csv"),
+    os.path.join(BASE_DIR, "xgb_results.csv"),
+]
+
 CANDIDATE_SAMPLE = [
     os.path.join(BASE_DIR, "Data", "startups_python.csv"),
     os.path.join(BASE_DIR, "..", "Data", "startups_python.csv"),
@@ -63,6 +70,8 @@ RF_PY_PATH = first_existing(CANDIDATE_RF_PY)
 
 LR_RM_PATH = first_existing(CANDIDATE_LR_RM)
 LR_PY_PATH = first_existing(CANDIDATE_LR_PY)
+
+XGB_PATH = first_existing(CANDIDATE_XGB)
 
 SAMPLE_PATH = first_existing(CANDIDATE_SAMPLE)
 
@@ -214,6 +223,8 @@ rf_py_df = load_results(RF_PY_PATH) if RF_PY_PATH else None
 lr_rm_df = load_results(LR_RM_PATH) if LR_RM_PATH else None
 lr_py_df = load_results(LR_PY_PATH) if LR_PY_PATH else None
 
+xgb_df = load_results(XGB_PATH) if XGB_PATH else None
+
 sample_df = load_sample_dataset(SAMPLE_PATH) if SAMPLE_PATH else None
 
 
@@ -221,7 +232,7 @@ sample_df = load_sample_dataset(SAMPLE_PATH) if SAMPLE_PATH else None
 st.sidebar.header("Navigation")
 view = st.sidebar.radio(
     "Choose view",
-    ["Sample data", "kNN", "Random Forest", "Logistic Regression"],
+    ["Sample data", "kNN", "Random Forest", "Logistic Regression", "XGBoost"],
     key="view_choice",
 )
 st.sidebar.divider()
@@ -406,6 +417,46 @@ elif view == "Logistic Regression":
                 st.dataframe(lr_py_df, use_container_width=True)
             else:
                 st.info("No Python LR file found.")
+
+
+# ------------------------ XGBoost view ------------------------
+# ------------------------ XGBoost view ------------------------
+elif view == "XGBoost":
+    st.header("XGBoost")
+
+    if xgb_df is None:
+        st.error("Could not find XGBoost results (Python).")
+        st.write("Tried:", [os.path.abspath(p) for p in CANDIDATE_XGB])
+        st.stop()
+
+    # We expect one row (id=1). If multiple rows exist, allow selection.
+    if "id" in xgb_df.columns and len(xgb_df) > 1:
+        ids = sorted(pd.to_numeric(xgb_df["id"], errors="coerce").dropna().astype(int).unique().tolist())
+        selected_id = st.sidebar.selectbox("id", ids, index=0, key="xgb_id")
+        tmp = xgb_df[xgb_df["id"].astype(int) == int(selected_id)]
+        row = tmp.iloc[0] if not tmp.empty else xgb_df.iloc[0]
+    else:
+        row = xgb_df.iloc[0]
+
+    # Same style as other pages (single results block)
+    show_dual_results(
+        title_top="Python results",
+        row_top=row,
+        title_bottom="",
+        row_bottom=None,
+    )
+
+    # Optional: show model params if present (but still "same style" = expander)
+    with st.expander("Model hyperparameters (if available)"):
+        params = {}
+        for k in ["n_estimators", "max_depth", "learning_rate"]:
+            if k in xgb_df.columns:
+                params[k] = row[k]
+        if params:
+            st.write(params)
+        else:
+            st.info("No hyperparameter columns found in xgb_results.csv.")
+
 
 
 # ------------------------ Sample data view ------------------------
