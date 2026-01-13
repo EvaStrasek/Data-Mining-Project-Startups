@@ -16,8 +16,8 @@ def first_existing(paths):
 
 # ------------------------ File paths ------------------------
 CANDIDATE_KNN_RM = [
-    os.path.join(BASE_DIR, "Data", "results_knn.csv"),
-    os.path.join(BASE_DIR, "..", "Data", "results_knn.csv"),
+    os.path.join(BASE_DIR, "Data", "knn_results_13012026.csv"),
+    os.path.join(BASE_DIR, "..", "Data", "knn_results_13012026.csv"),
 ]
 CANDIDATE_KNN_PY = [
     os.path.join(BASE_DIR, "Data", "knn_results.csv"),
@@ -27,8 +27,8 @@ CANDIDATE_KNN_PY = [
 ]
 
 CANDIDATE_RF_RM = [
-    os.path.join(BASE_DIR, "Data", "results_random_forest.csv"),
-    os.path.join(BASE_DIR, "..", "Data", "results_random_forest.csv"),
+    os.path.join(BASE_DIR, "Data", "results_random_forest_13012026.csv"),
+    os.path.join(BASE_DIR, "..", "Data", "results_random_forest_13012026.csv"),
 ]
 CANDIDATE_RF_PY = [
     os.path.join(BASE_DIR, "Data", "rf_results.csv"),

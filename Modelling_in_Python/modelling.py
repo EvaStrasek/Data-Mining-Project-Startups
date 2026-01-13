@@ -318,7 +318,7 @@ def main():
 
     # RF params
     parser.add_argument("--trees_list", type=str, default="50,100,200,300,400,500")
-    parser.add_argument("--depth_list", type=str, default="10,15,20")
+    parser.add_argument("--depth_list", type=str, default="10,15,20,25,30")
     parser.add_argument("--prepruning_list", type=str, default="FALSE,TRUE")
 
     # Output paths
