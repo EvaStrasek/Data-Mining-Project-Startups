@@ -1,4 +1,4 @@
-﻿id;accuracy;pred_0_0;pred_1_0;pred_0_1;pred_1_1;class_recall_0_0;class_recall_1_1;class_precision_0_0;class_precision_1_1;number_of_trees;max_depth;pruning
+﻿id;accuracy;pred_0_0;pred_0_1;pred_1_0;pred_1_1;class_recall_1_1;class_recall_0_0;class_precision_1_1;class_precision_0_0;number_of_trees;max_depth;prepruning
 1;75.52%;293;200;106;651;59.43%;86.00%;73.43%;76.50%;50;10;TRUE
 2;75.44%;300;193;114;643;60.85%;84.94%;72.46%;76.91%;100;10;TRUE
 3;75.36%;303;190;118;639;61.46%;84.41%;71.97%;77.08%;200;10;TRUE
