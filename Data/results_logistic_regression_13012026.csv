@@ -1,0 +1,2 @@
+id;accuracy;pred_0_0;pred_1_0;pred_0_1;pred_1_1;class_recall_0_0;class_recall_1_1;class_precision_0_0;class_precision_1_1
+1;65.60%;394;99;331;426;79.92%;56.27%;54.34%;81.14%
