@@ -54,7 +54,7 @@ print(spearman)
 # --------------------------------------------------
 bin_features = [
     "country_code", "state_code", "region",
-    "market ", "category_list"
+    "market", "category_list"
 ]
 
 print("\n=== CHI-SQUARE TESTS (categorical vs acquired) ===\n")
