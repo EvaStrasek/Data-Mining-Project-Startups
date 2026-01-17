@@ -13,6 +13,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.metrics import make_scorer, f1_score, precision_score, recall_score
+from sklearn.metrics import precision_recall_curve, average_precision_score
 
 # Optional XGBoost
 try:
@@ -343,24 +345,67 @@ def build_cv_models(
 
 
 def cv_metrics_table(models: dict, X, y, cv):
-    scoring = {"AUC": "roc_auc", "F1": "f1", "Precision": "precision", "Recall": "recall"}
+    scoring = {
+        "AUC": "roc_auc",
+        "F1": make_scorer(f1_score, pos_label=0),
+        "Precision": make_scorer(precision_score, pos_label=0, zero_division=0),
+        "Recall": make_scorer(recall_score, pos_label=0, zero_division=0),
+    }
+
     rows = []
     for name, model in models.items():
-        res = cross_validate(model, X, y, cv=cv, scoring=scoring, n_jobs=-1)
+        res = cross_validate(
+            model,
+            X,
+            y,
+            cv=cv,
+            scoring=scoring,
+            n_jobs=-1
+        )
+
         row = {"Model": name}
         for m in scoring.keys():
             vals = res[f"test_{m}"]
             row[f"{m}_mean"] = float(np.mean(vals))
             row[f"{m}_std"] = float(np.std(vals, ddof=1)) if len(vals) > 1 else 0.0
+
         rows.append(row)
+
     return pd.DataFrame(rows)
 
 
+
 def cv_roc_curve(model, X, y, cv):
-    y_proba = cross_val_predict(model, X, y, cv=cv, method="predict_proba", n_jobs=-1)[:, 1]
-    fpr, tpr, _ = roc_curve(y, y_proba)
-    aucv = roc_auc_score(y, y_proba)
+    y_proba = cross_val_predict(
+        model, X, y,
+        cv=cv,
+        method="predict_proba",
+        n_jobs=-1
+    )[:, 0]   # class 0 = closed = false
+
+    fpr, tpr, _ = roc_curve(y, y_proba, pos_label=0)
+    aucv = roc_auc_score((y == 0).astype(int), y_proba)  # AUC is fine either way
+
     return fpr, tpr, float(aucv)
+
+def cv_pr_curve(model, X, y, cv):
+    # probability for class 0 (closed = false)
+    y_proba = cross_val_predict(
+        model, X, y,
+        cv=cv,
+        method="predict_proba",
+        n_jobs=-1
+    )[:, 0]
+
+    # PR expects binary y where 1 = positive class (here: closed)
+    y_bin = (y == 0).astype(int)
+
+    precision, recall, _ = precision_recall_curve(y_bin, y_proba)
+    ap = average_precision_score(y_bin, y_proba)
+
+    return precision, recall, float(ap)
+
+
 
 
 # ------------------------ Streamlit UI ------------------------
@@ -416,6 +461,7 @@ if view == "Model Comparison":
         st.write("Tried:", [os.path.abspath(p) for p in CANDIDATE_CV_DATASET])
         st.stop()
 
+    # ---------------- Sidebar: CV settings ----------------
     st.sidebar.subheader("Cross-validation settings")
     folds = st.sidebar.slider("Folds", 3, 10, 5, 1, key="cv_folds")
     rs = st.sidebar.number_input("Random state", value=42, step=1, key="cv_rs")
@@ -436,6 +482,10 @@ if view == "Model Comparison":
     show_rocs = st.sidebar.checkbox("Show ROC curve(s)", value=True, key="cv_show_rocs")
     roc_mode = st.sidebar.radio("ROC mode", ["Selected model", "All models"], index=0, key="cv_roc_mode")
 
+    show_pr = st.sidebar.checkbox("Show Precision–Recall curve(s)", value=True, key="cv_show_pr")
+    pr_mode = st.sidebar.radio("PR mode", ["Selected model", "All models"], index=0, key="cv_pr_mode")
+
+    # ---------------- Load data ----------------
     try:
         df_cv, X, y, feature_cols = load_cv_dataset(CV_DATASET_PATH)
     except Exception as e:
@@ -444,7 +494,7 @@ if view == "Model Comparison":
 
     st.caption(f"Loaded CV dataset from: {CV_DATASET_PATH}")
     st.write(f"**Rows used:** {len(df_cv)}")
-    vc = pd.Series(y).value_counts()
+
     target_table = pd.DataFrame({
         "Class": ["Acquired (1)", "Closed (0)"],
         "Count": ["2419", "1439"],
@@ -453,14 +503,17 @@ if view == "Model Comparison":
 
     st.markdown("**Target distribution:**")
     st.table(target_table)
+
     st.markdown(
-    "**Features used:** "
-    "`total_funding`, `venture`, `funding_rounds`, `seed`, `angels`, "
-    "`round_A`, `round_B`, `round_C`, `round_D`, `founded_year`")
+        "**Features used:** "
+        "`log_funding`, `venture`, `funding_rounds`, `seed`, `angels`, "
+        "`round_A`, `round_B`, `round_C`, `round_D`, `founded_year`"
+    )
 
     if not XGBOOST_AVAILABLE:
         st.info("XGBoost is not available (missing `xgboost`). Other models will still be evaluated.")
 
+    # ---------------- CV + models ----------------
     cv = StratifiedKFold(n_splits=int(folds), shuffle=True, random_state=int(rs))
 
     models = build_cv_models(
@@ -487,48 +540,63 @@ if view == "Model Comparison":
         "Recall": res_df.apply(lambda r: f"{r['Recall_mean']:.3f} ± {r['Recall_std']:.3f}", axis=1),
     })
 
-    # Sort by AUC mean (not the formatted string)
     res_df_sorted = res_df.sort_values(by="AUC_mean", ascending=False)
     pretty = pretty.set_index("Model").loc[res_df_sorted["Model"]].reset_index()
 
     st.subheader("Final comparison (CV)")
     st.dataframe(pretty, use_container_width=True)
 
+    # ---------------- ROC curves ----------------
     if show_rocs:
         st.subheader("ROC curve(s) (cross-validated probabilities)")
         model_names = list(models.keys())
         selected = st.selectbox("Select model for ROC", model_names, index=0, key="cv_selected_model")
 
+        fig = plt.figure(figsize=(6, 4), dpi=120)
         if roc_mode == "Selected model":
-            m = models[selected]
-            with st.spinner(f"Computing ROC for: {selected} ..."):
-                fpr, tpr, aucv = cv_roc_curve(m, X, y, cv)
-
-            fig = plt.figure()
+            fpr, tpr, aucv = cv_roc_curve(models[selected], X, y, cv)
             plt.plot(fpr, tpr, label=f"{selected} (AUC={aucv:.3f})")
-            plt.plot([0, 1], [0, 1], linestyle="--", label="Random")
-            plt.xlabel("False Positive Rate")
-            plt.ylabel("True Positive Rate")
-            plt.legend()
-            st.pyplot(fig, clear_figure=True)
-
         else:
-            fig = plt.figure()
-            with st.spinner("Computing ROC for all models..."):
-                for name, m in models.items():
-                    try:
-                        fpr, tpr, aucv = cv_roc_curve(m, X, y, cv)
-                        plt.plot(fpr, tpr, label=f"{name} (AUC={aucv:.3f})")
-                    except Exception:
-                        pass
-                plt.plot([0, 1], [0, 1], linestyle="--", label="Random")
-                plt.xlabel("False Positive Rate")
-                plt.ylabel("True Positive Rate")
-                plt.legend()
-            st.pyplot(fig, clear_figure=True)
+            for name, m in models.items():
+                try:
+                    fpr, tpr, aucv = cv_roc_curve(m, X, y, cv)
+                    plt.plot(fpr, tpr, label=f"{name} (AUC={aucv:.3f})")
+                except Exception:
+                    pass
 
-    st.caption("Note: This page reports stratified cross-validation results (final comparison).")
+        plt.plot([0, 1], [0, 1], linestyle="--", label="Random")
+        plt.xlabel("False Positive Rate")
+        plt.ylabel("True Positive Rate")
+        plt.legend()
+        st.pyplot(fig, use_container_width=False)
+
+    # ---------------- Precision–Recall curves ----------------
+    if show_pr:
+        st.subheader("Precision–Recall curve(s) (cross-validated probabilities)")
+        model_names = list(models.keys())
+        selected_pr = st.selectbox("Select model for PR", model_names, index=0, key="cv_selected_model_pr")
+
+        fig = plt.figure(figsize=(6, 4), dpi=120)
+        if pr_mode == "Selected model":
+            precision, recall, ap = cv_pr_curve(models[selected_pr], X, y, cv)
+            plt.plot(recall, precision, label=f"{selected_pr} (AP={ap:.3f})")
+        else:
+            for name, m in models.items():
+                try:
+                    precision, recall, ap = cv_pr_curve(m, X, y, cv)
+                    plt.plot(recall, precision, label=f"{name} (AP={ap:.3f})")
+                except Exception:
+                    pass
+
+        plt.xlabel("Recall")
+        plt.ylabel("Precision")
+        plt.legend()
+        st.pyplot(fig, use_container_width=False)
+
+    st.caption("Note: This page reports stratified cross-validation results. "
+               "Precision/Recall/F1 are computed for the CLOSED class (0).")
     st.stop()
+
 
 
 # ------------------------ KNN view ------------------------
