@@ -3,6 +3,26 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+# ------------------------ ML imports (for CV comparison + ROC) ------------------------
+from sklearn.model_selection import StratifiedKFold, cross_validate, cross_val_predict
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import roc_curve, roc_auc_score
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+
+# Optional XGBoost
+try:
+    from xgboost import XGBClassifier
+    XGBOOST_AVAILABLE = True
+except Exception:
+    XGBOOST_AVAILABLE = False
+
+import matplotlib.pyplot as plt
+
 
 # ------------------------ Robust base dir ------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -22,8 +42,6 @@ CANDIDATE_KNN_RM = [
 CANDIDATE_KNN_PY = [
     os.path.join(BASE_DIR, "Data", "knn_results.csv"),
     os.path.join(BASE_DIR, "..", "Data", "knn_results.csv"),
-    os.path.join(BASE_DIR, "Data", "results_knn_python.csv"),
-    os.path.join(BASE_DIR, "..", "Data", "results_knn_python.csv"),
 ]
 
 CANDIDATE_RF_RM = [
@@ -33,8 +51,6 @@ CANDIDATE_RF_RM = [
 CANDIDATE_RF_PY = [
     os.path.join(BASE_DIR, "Data", "rf_results.csv"),
     os.path.join(BASE_DIR, "..", "Data", "rf_results.csv"),
-    os.path.join(BASE_DIR, "Data", "results_random_forest_python.csv"),
-    os.path.join(BASE_DIR, "..", "Data", "results_random_forest_python.csv"),
 ]
 
 CANDIDATE_LR_RM = [
@@ -50,7 +66,7 @@ CANDIDATE_LR_PY = [
     os.path.join(BASE_DIR, "..", "Data", "results_logreg_python.csv"),
 ]
 
-# NEW: XGBoost results candidates
+# XGBoost results candidates (CSV results page)
 CANDIDATE_XGB = [
     os.path.join(BASE_DIR, "Data", "xgb_results.csv"),
     os.path.join(BASE_DIR, "..", "Data", "xgb_results.csv"),
@@ -58,7 +74,15 @@ CANDIDATE_XGB = [
 ]
 
 CANDIDATE_SAMPLE = [
-    os.path.join(BASE_DIR, "Data", "startups_python.csv"),
+    os.path.join(BASE_DIR, "Data", "startups_new.csv"),
+    os.path.join(BASE_DIR, "..", "Data", "startups_new.csv"),
+]
+
+# NEW: dataset for CV evaluation (acquired vs closed)
+CANDIDATE_CV_DATASET = [
+    os.path.join(BASE_DIR, "Data", "startups_new.csv"),
+    os.path.join(BASE_DIR, "..", "Data", "startups_new.csv"),
+    os.path.join(BASE_DIR, "Data", "startups_python.csv"),      # fallback
     os.path.join(BASE_DIR, "..", "Data", "startups_python.csv"),
 ]
 
@@ -74,6 +98,7 @@ LR_PY_PATH = first_existing(CANDIDATE_LR_PY)
 XGB_PATH = first_existing(CANDIDATE_XGB)
 
 SAMPLE_PATH = first_existing(CANDIDATE_SAMPLE)
+CV_DATASET_PATH = first_existing(CANDIDATE_CV_DATASET)
 
 
 # ------------------------ Helpers ------------------------
@@ -159,7 +184,7 @@ def best_rf_config(df: pd.DataFrame) -> tuple[int, int, str]:
 
 
 def load_sample_dataset(path: str) -> pd.DataFrame:
-    df = pd.read_csv(path, sep=";")
+    df = pd.read_csv(path, sep=";", encoding="latin1")
     df.columns = df.columns.str.strip()
 
     if "market" in df.columns:
@@ -209,11 +234,140 @@ def show_dual_results(title_top: str, row_top: pd.Series | None, title_bottom: s
         st.warning("No matching result row found for this selection.")
 
 
+# ------------------------ CV helpers ------------------------
+@st.cache_data(show_spinner=False)
+def load_cv_dataset(path: str, sep=";", encoding="latin1"):
+    df = pd.read_csv(path, sep=sep, encoding=encoding, engine="python")
+    df.columns = df.columns.str.strip()
+
+    if "status" not in df.columns:
+        raise KeyError("Dataset for CV must contain column: status")
+
+    df["target"] = df["status"].map({"acquired": 1, "closed": 0})
+    df = df.dropna(subset=["target"]).copy()
+    df["target"] = df["target"].astype(int)
+
+    candidate = [
+        "funding_total_usd",
+        "venture",
+        "funding_rounds",
+        "angels",
+        "seed",
+        "round_A", "round_B", "round_C", "round_D",
+        "founded_year",
+    ]
+    use_cols = [c for c in candidate if c in df.columns]
+    if not use_cols:
+        raise KeyError("No usable feature columns found for CV dataset. Update candidate list.")
+
+    for c in use_cols:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    df = df.dropna(subset=use_cols + ["target"]).copy()
+
+    if "funding_total_usd" in df.columns:
+        df["log_funding"] = np.log1p(df["funding_total_usd"])
+        feature_cols = ["log_funding"] + [c for c in use_cols if c != "funding_total_usd"]
+    else:
+        feature_cols = use_cols
+
+    X = df[feature_cols].values
+    y = df["target"].values
+    return df, X, y, feature_cols
+
+
+def build_cv_models(
+    random_state: int,
+    knn_k: int,
+    rf_depth: int,
+    rf_trees: int,
+    dt_depth: int,
+    gbt_lr: float,
+    gbt_estimators: int,
+    xgb_lr: float,
+    xgb_estimators: int,
+    xgb_depth: int,
+):
+    models = {}
+
+    models["Logistic Regression"] = Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", LogisticRegression(
+            max_iter=4000,
+            class_weight="balanced",
+            random_state=random_state
+        ))
+    ])
+
+    models["KNN (uniform)"] = Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", KNeighborsClassifier(
+            n_neighbors=knn_k,
+            weights="uniform"
+        ))
+    ])
+
+    models["Decision Tree"] = DecisionTreeClassifier(
+        max_depth=dt_depth if dt_depth > 0 else None,
+        class_weight="balanced",
+        random_state=random_state
+    )
+
+    models["Random Forest"] = RandomForestClassifier(
+        n_estimators=rf_trees,
+        max_depth=rf_depth if rf_depth > 0 else None,
+        class_weight="balanced",
+        random_state=random_state,
+        n_jobs=-1
+    )
+
+    models["Gradient Boosted Trees (sklearn)"] = GradientBoostingClassifier(
+        learning_rate=gbt_lr,
+        n_estimators=gbt_estimators,
+        random_state=random_state
+    )
+
+    if XGBOOST_AVAILABLE:
+        models["XGBoost"] = XGBClassifier(
+            n_estimators=xgb_estimators,
+            learning_rate=xgb_lr,
+            max_depth=xgb_depth,
+            subsample=0.9,
+            colsample_bytree=0.9,
+            reg_lambda=1.0,
+            eval_metric="logloss",
+            random_state=random_state,
+            n_jobs=-1
+        )
+
+    return models
+
+
+def cv_metrics_table(models: dict, X, y, cv):
+    scoring = {"AUC": "roc_auc", "F1": "f1", "Precision": "precision", "Recall": "recall"}
+    rows = []
+    for name, model in models.items():
+        res = cross_validate(model, X, y, cv=cv, scoring=scoring, n_jobs=-1)
+        row = {"Model": name}
+        for m in scoring.keys():
+            vals = res[f"test_{m}"]
+            row[f"{m}_mean"] = float(np.mean(vals))
+            row[f"{m}_std"] = float(np.std(vals, ddof=1)) if len(vals) > 1 else 0.0
+        rows.append(row)
+    return pd.DataFrame(rows)
+
+
+def cv_roc_curve(model, X, y, cv):
+    y_proba = cross_val_predict(model, X, y, cv=cv, method="predict_proba", n_jobs=-1)[:, 1]
+    fpr, tpr, _ = roc_curve(y, y_proba)
+    aucv = roc_auc_score(y, y_proba)
+    return fpr, tpr, float(aucv)
+
+
 # ------------------------ Streamlit UI ------------------------
 st.set_page_config(layout="wide")
 st.title("Startups prediction and modelling")
 
-# Load datasets (if they exist)
+# Load CSV-results datasets (if they exist)
 knn_rm_df = load_results(KNN_RM_PATH) if KNN_RM_PATH else None
 knn_py_df = load_results(KNN_PY_PATH) if KNN_PY_PATH else None
 
@@ -232,7 +386,7 @@ sample_df = load_sample_dataset(SAMPLE_PATH) if SAMPLE_PATH else None
 st.sidebar.header("Navigation")
 view = st.sidebar.radio(
     "Choose view",
-    ["Sample data", "kNN", "Random Forest", "Logistic Regression", "XGBoost"],
+    ["Sample data", "Model Comparison", "kNN", "Random Forest", "Logistic Regression", "XGBoost"],
     key="view_choice",
 )
 st.sidebar.divider()
@@ -251,6 +405,130 @@ if st.sidebar.button("Reset to best accuracy"):
         st.session_state["rf_prepruning"] = bp
 
     st.rerun()
+
+
+# ------------------------ CV Comparison view ------------------------
+if view == "Model Comparison":
+    st.header("Model Comparison")
+
+    if CV_DATASET_PATH is None:
+        st.error("Could not find dataset for cross-validation (startups_new.csv / startups_python.csv).")
+        st.write("Tried:", [os.path.abspath(p) for p in CANDIDATE_CV_DATASET])
+        st.stop()
+
+    st.sidebar.subheader("Cross-validation settings")
+    folds = st.sidebar.slider("Folds", 3, 10, 5, 1, key="cv_folds")
+    rs = st.sidebar.number_input("Random state", value=42, step=1, key="cv_rs")
+
+    st.sidebar.subheader("Model hyperparameters (CV)")
+    knn_k = st.sidebar.slider("KNN k", 3, 50, 20, 1, key="cv_knn_k")
+    rf_depth = st.sidebar.slider("RF max_depth (0=None)", 0, 30, 6, 1, key="cv_rf_depth")
+    rf_trees = st.sidebar.slider("RF n_estimators", 50, 600, 300, 50, key="cv_rf_trees")
+    dt_depth = st.sidebar.slider("Decision Tree max_depth (0=None)", 0, 30, 6, 1, key="cv_dt_depth")
+
+    gbt_lr = st.sidebar.slider("GBT learning_rate", 0.01, 0.5, 0.1, 0.01, key="cv_gbt_lr")
+    gbt_estimators = st.sidebar.slider("GBT n_estimators", 50, 600, 200, 50, key="cv_gbt_estimators")
+
+    xgb_lr = st.sidebar.slider("XGB learning_rate", 0.01, 0.5, 0.1, 0.01, key="cv_xgb_lr")
+    xgb_estimators = st.sidebar.slider("XGB n_estimators", 50, 800, 300, 50, key="cv_xgb_estimators")
+    xgb_depth = st.sidebar.slider("XGB max_depth", 2, 10, 4, 1, key="cv_xgb_depth")
+
+    show_rocs = st.sidebar.checkbox("Show ROC curve(s)", value=True, key="cv_show_rocs")
+    roc_mode = st.sidebar.radio("ROC mode", ["Selected model", "All models"], index=0, key="cv_roc_mode")
+
+    try:
+        df_cv, X, y, feature_cols = load_cv_dataset(CV_DATASET_PATH)
+    except Exception as e:
+        st.error(f"Failed to load CV dataset: {e}")
+        st.stop()
+
+    st.caption(f"Loaded CV dataset from: {CV_DATASET_PATH}")
+    st.write(f"**Rows used:** {len(df_cv)}")
+    vc = pd.Series(y).value_counts()
+    target_table = pd.DataFrame({
+        "Class": ["Acquired (1)", "Closed (0)"],
+        "Count": ["2419", "1439"],
+        "Share (%)": ["62.7%", "37.3%"]
+    })
+
+    st.markdown("**Target distribution:**")
+    st.table(target_table)
+    st.markdown(
+    "**Features used:** "
+    "`total_funding`, `venture`, `funding_rounds`, `seed`, `angels`, "
+    "`round_A`, `round_B`, `round_C`, `round_D`, `founded_year`")
+
+    if not XGBOOST_AVAILABLE:
+        st.info("XGBoost is not available (missing `xgboost`). Other models will still be evaluated.")
+
+    cv = StratifiedKFold(n_splits=int(folds), shuffle=True, random_state=int(rs))
+
+    models = build_cv_models(
+        random_state=int(rs),
+        knn_k=int(knn_k),
+        rf_depth=int(rf_depth),
+        rf_trees=int(rf_trees),
+        dt_depth=int(dt_depth),
+        gbt_lr=float(gbt_lr),
+        gbt_estimators=int(gbt_estimators),
+        xgb_lr=float(xgb_lr),
+        xgb_estimators=int(xgb_estimators),
+        xgb_depth=int(xgb_depth),
+    )
+
+    with st.spinner("Running cross-validation for all models..."):
+        res_df = cv_metrics_table(models, X, y, cv)
+
+    pretty = pd.DataFrame({
+        "Model": res_df["Model"],
+        "AUC": res_df.apply(lambda r: f"{r['AUC_mean']:.3f} ± {r['AUC_std']:.3f}", axis=1),
+        "F1": res_df.apply(lambda r: f"{r['F1_mean']:.3f} ± {r['F1_std']:.3f}", axis=1),
+        "Precision": res_df.apply(lambda r: f"{r['Precision_mean']:.3f} ± {r['Precision_std']:.3f}", axis=1),
+        "Recall": res_df.apply(lambda r: f"{r['Recall_mean']:.3f} ± {r['Recall_std']:.3f}", axis=1),
+    })
+
+    # Sort by AUC mean (not the formatted string)
+    res_df_sorted = res_df.sort_values(by="AUC_mean", ascending=False)
+    pretty = pretty.set_index("Model").loc[res_df_sorted["Model"]].reset_index()
+
+    st.subheader("Final comparison (CV)")
+    st.dataframe(pretty, use_container_width=True)
+
+    if show_rocs:
+        st.subheader("ROC curve(s) (cross-validated probabilities)")
+        model_names = list(models.keys())
+        selected = st.selectbox("Select model for ROC", model_names, index=0, key="cv_selected_model")
+
+        if roc_mode == "Selected model":
+            m = models[selected]
+            with st.spinner(f"Computing ROC for: {selected} ..."):
+                fpr, tpr, aucv = cv_roc_curve(m, X, y, cv)
+
+            fig = plt.figure()
+            plt.plot(fpr, tpr, label=f"{selected} (AUC={aucv:.3f})")
+            plt.plot([0, 1], [0, 1], linestyle="--", label="Random")
+            plt.xlabel("False Positive Rate")
+            plt.ylabel("True Positive Rate")
+            plt.legend()
+            st.pyplot(fig, clear_figure=True)
+
+        else:
+            fig = plt.figure()
+            with st.spinner("Computing ROC for all models..."):
+                for name, m in models.items():
+                    try:
+                        fpr, tpr, aucv = cv_roc_curve(m, X, y, cv)
+                        plt.plot(fpr, tpr, label=f"{name} (AUC={aucv:.3f})")
+                    except Exception:
+                        pass
+                plt.plot([0, 1], [0, 1], linestyle="--", label="Random")
+                plt.xlabel("False Positive Rate")
+                plt.ylabel("True Positive Rate")
+                plt.legend()
+            st.pyplot(fig, clear_figure=True)
+
+    st.caption("Note: This page reports stratified cross-validation results (final comparison).")
+    st.stop()
 
 
 # ------------------------ KNN view ------------------------
@@ -419,8 +697,7 @@ elif view == "Logistic Regression":
                 st.info("No Python LR file found.")
 
 
-# ------------------------ XGBoost view ------------------------
-# ------------------------ XGBoost view ------------------------
+# ------------------------ XGBoost view (CSV results) ------------------------
 elif view == "XGBoost":
     st.header("XGBoost")
 
@@ -438,7 +715,6 @@ elif view == "XGBoost":
     else:
         row = xgb_df.iloc[0]
 
-    # Same style as other pages (single results block)
     show_dual_results(
         title_top="Python results",
         row_top=row,
@@ -446,7 +722,6 @@ elif view == "XGBoost":
         row_bottom=None,
     )
 
-    # Optional: show model params if present (but still "same style" = expander)
     with st.expander("Model hyperparameters (if available)"):
         params = {}
         for k in ["n_estimators", "max_depth", "learning_rate"]:
@@ -458,20 +733,35 @@ elif view == "XGBoost":
             st.info("No hyperparameter columns found in xgb_results.csv.")
 
 
-
 # ------------------------ Sample data view ------------------------
 else:
     st.header("Sample data")
 
     if sample_df is None:
-        st.error("Could not find startups_python file in Data/")
+        st.error("Could not find investments_VC file in Data/")
         st.write("Tried:", [os.path.abspath(p) for p in CANDIDATE_SAMPLE])
         st.stop()
 
-    st.sidebar.subheader("Sample data filters")
-    n_rows = st.sidebar.slider("Rows to display", min_value=5, max_value=200, value=20, step=5)
-
     df = sample_df.copy()
+
+    # --- STRICT FILTER: only acquired / closed ---
+    if "status" not in df.columns:
+        st.error("Dataset must contain column: status")
+        st.stop()
+
+    df["status"] = df["status"].astype(str).str.strip().str.lower()
+    df = df[df["status"].isin(["acquired", "closed"])]
+
+    # ---------------- Sidebar filters ----------------
+    st.sidebar.subheader("Sample data filters")
+
+    n_rows = st.sidebar.slider(
+        "Rows to display",
+        min_value=5,
+        max_value=200,
+        value=20,
+        step=5
+    )
 
     if "market" in df.columns:
         markets = sorted(df["market"].dropna().astype(str).unique().tolist())
@@ -479,30 +769,49 @@ else:
         if market_choice != "All":
             df = df[df["market"].astype(str) == market_choice]
 
-    if "Status" in df.columns:
-        statuses = sorted(df["Status"].dropna().astype(int).unique().tolist())
-        status_choice = st.sidebar.selectbox("Status", ["All"] + statuses)
-        if status_choice != "All":
-            df = df[df["Status"].astype(int) == int(status_choice)]
+    status_choice = st.sidebar.selectbox(
+        "status",
+        ["All", "acquired", "closed"]
+    )
+    if status_choice != "All":
+        df = df[df["status"] == status_choice]
 
+    # ---------------- Display ----------------
     display_df = df.head(n_rows).copy()
 
     if "funding_total_usd" in display_df.columns:
         display_df["funding_total_usd"] = display_df["funding_total_usd"].apply(format_money)
 
-    preferred_order = ["funding_total_usd", "market", "funding_rounds", "Status", "firm_age"]
+    preferred_order = ["funding_total_usd", "market", "funding_rounds", "status", "firm_age"]
     cols = display_df.columns.tolist()
     ordered = [c for c in preferred_order if c in cols] + [c for c in cols if c not in preferred_order]
     display_df = display_df[ordered]
 
-    st.caption(f"Loaded from: {SAMPLE_PATH}")
     st.dataframe(display_df, use_container_width=True)
 
+    # ---------------- Summary ----------------
     with st.expander("Quick summary"):
         st.write(f"Rows after filters: {len(df)}")
-        if "Status" in df.columns:
-            st.write("Status distribution:")
-            st.dataframe(df["Status"].value_counts(dropna=False).to_frame("count"))
-        if "market" in df.columns:
-            st.write("Top markets:")
-            st.dataframe(df["market"].value_counts(dropna=False).head(10).to_frame("count"))
+        st.write("Status distribution:")
+        st.dataframe(df["status"].value_counts().to_frame("count"))
+        if market_choice == "All" and "market" in df.columns:
+            st.write("Market distribution:")
+            st.dataframe(
+                df["market"]
+                .value_counts()
+                .to_frame("count")
+            )
+        country_col = None
+        for c in ["country", "country_code", "country_name"]:
+            if c in df.columns:
+                country_col = c
+                break
+
+        if country_col is not None:
+            st.write("Country distribution:")
+            st.dataframe(
+                df[country_col]
+                .value_counts()
+                .head(15)
+                .to_frame("count"))
+
