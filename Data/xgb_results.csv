@@ -1,2 +1,2 @@
 id;accuracy;pred_1_1;pred_1_0;pred_0_1;pred_0_0;class_recall_1_1;class_recall_0_0;class_precision_1_1;class_precision_0_0;n_estimators;max_depth;learning_rate
-1;71.50%;534;192;138;294;73.55%;68.06%;79.46%;60.49%;500;5;0.1
+1;70.55%;544;182;159;273;74.93%;63.19%;77.38%;60.00%;500;5;0.1
